@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "sourceMap": true,
+      "outDir": "./dist/bundle",
+      "rootDir": ".",
+      "jsx": "react",
+      "allowJs": true
+  },
+  "exclude": [
+      "node_modules",
+      "dist"
+  ]
+}
+
