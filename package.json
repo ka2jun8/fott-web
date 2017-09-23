@@ -4,6 +4,10 @@
   "main": "index.js",
   "author": "kani",
   "license": "MIT",
+  "scripts": {
+    "build": "webpack",
+    "build:watch": "webpack --watch"
+  },
   "devDependencies": {
     "@types/eventemitter3": "^2.0.2",
     "@types/node": "^8.0.28",
