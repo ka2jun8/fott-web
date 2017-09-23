@@ -3,6 +3,8 @@ import * as React from "react";
 import { FirebaseWrapper, UserProfile } from "./firebase";
 import { Tabs, Tab, FormGroup, ControlLabel, FormControl, HelpBlock, Button } from "react-bootstrap";
 
+//TODO Twitter連携したい
+
 export interface LoginProps {
   fb: FirebaseWrapper,
   onLogin: (userProfile: UserProfile) => void,
