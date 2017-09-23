@@ -2,15 +2,20 @@ import * as ReactDOM from "react-dom";
 import * as React from "react";
 import { Tabs, Tab, Button } from "react-bootstrap";
 import {EventEmitter} from "eventemitter3";
-import { FirebaseWrapper, TextInfo } from "./firebase";
+import { FirebaseWrapper, AllTextMap, ListInfo, TextInfo } from "./firebase";
+import {TabContent} from "./main";
 import {Add} from "./add";
-import {List} from "./list";
+import {AddList} from "./add-list";
+import {Texts} from "./texts";
 
 export interface ContentProps {
   fb: FirebaseWrapper,
   emitter: EventEmitter,
   tabContent: number,
-  textList: TextInfo[],
+  lists: ListInfo[],
+  textList: AllTextMap,
+  selectedListId: string,
+  selectedTextList: TextInfo[],
   onLogout: () => void,
 }
 
@@ -43,11 +48,15 @@ export class Content extends React.Component<ContentProps, any> {
 
   render() {
     const listView = (
-      <div style={this.style.view}><List emitter={this.props.emitter} textList={this.props.textList}/></div>
+      <div style={this.style.view}><Texts {...this.props}/></div>
     );
 
     const addView = (
-      <div style={this.style.view}><Add emitter={this.props.emitter}/></div>
+      <div style={this.style.view}><Add emitter={this.props.emitter} lists={this.props.lists}/></div>
+    );
+
+    const addListView = (
+      <div style={this.style.view}><AddList emitter={this.props.emitter} lists={this.props.lists}/></div>
     );
 
     const userView = (
@@ -56,10 +65,11 @@ export class Content extends React.Component<ContentProps, any> {
 
     return (
       <div>
-        <Tabs defaultActiveKey={this.props.tabContent} id="uncontrolled-tab-example" onSelect={this.onTabChange.bind(this)}>
-          <Tab eventKey={1} title="List">{listView}</Tab>
-          <Tab eventKey={2} title="Add">{addView}</Tab>
-          <Tab eventKey={3} title="User">{userView}</Tab>
+        <Tabs defaultActiveKey={this.props.tabContent} activeKey={this.props.tabContent} id="uncontrolled-tab-example" onSelect={this.onTabChange.bind(this)}>
+          <Tab eventKey={TabContent.TEXTS} title="Texts">{listView}</Tab>
+          <Tab eventKey={TabContent.ADD} title="Add">{addView}</Tab>
+          <Tab eventKey={TabContent.ADDLIST} title="AddList">{addListView}</Tab>
+          <Tab eventKey={TabContent.USER} title="User">{userView}</Tab>
         </Tabs>
       </div>
     );
