@@ -22,8 +22,8 @@ export class Login extends React.Component<LoginProps, LoginState> {
   }
 
   state: any = {
-    email: "aru1103@hotmail.co.jp",
-    password: "password",
+    email: "",
+    password: "",
     checkPassword: "",
   }
 
