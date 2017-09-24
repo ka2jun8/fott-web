@@ -172,7 +172,7 @@ export class Main extends React.Component<any, MainState> {
   onLogin(userProfile: UserProfile) {
     if(userProfile) {
       localStorage.setItem("userProfile", JSON.stringify(userProfile));
-      this.updateTextList();
+      setTimeout(this.updateTextList.bind(this), 0);
       this.setState({userProfile, logined: true});
     }
   }
