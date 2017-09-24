@@ -7,6 +7,7 @@ import {ListInfo} from "./firebase";
 export interface SelectListProps {
   lists: ListInfo[],
   selectedId: string,
+  nonTitle?: boolean,
   onSelect: (listId: string)=>void,
 }
 
@@ -26,7 +27,12 @@ export class SelectList extends React.Component<SelectListProps, any> {
     const lists = this.props.lists.map((list, i)=>{
       return <option key={i} value={list.__id}>{list.title}</option>;
     });
-    const selectListView = (
+    const selectListView = this.props.nonTitle ? (
+      <FormControl value={this.props.selectedId} onChange={this.onSelect.bind(this)} componentClass="select">
+        {lists}
+      </FormControl>
+    ):
+    (
       <FormGroup controlId="formControlsSelect1">
         <ControlLabel>List Select</ControlLabel>
         <FormControl value={this.props.selectedId} onChange={this.onSelect.bind(this)} componentClass="select">

@@ -10,7 +10,8 @@ export const STAR = {
 
 export interface StarProps {
   star: number, // <= 5
-  onClick: (star: number)=>void,
+  disable?: boolean,
+  onClick?: (star: number)=>void,
 }
 
 export class Star extends React.Component<StarProps, any> {
@@ -27,10 +28,15 @@ export class Star extends React.Component<StarProps, any> {
       fontSize: 20,
       cursor: "pointer",
     },
+    itemDisabled: {
+      fontSize: 20,
+    },
   }
 
   onClick(star) {
-    this.props.onClick(star);
+    if(!this.props.disable && this.props.onClick){
+      this.props.onClick(star);
+    }
   }
 
   render() {
@@ -38,11 +44,11 @@ export class Star extends React.Component<StarProps, any> {
     for(let i=1; i<=5; i++) {
       if(i <= this.props.star) {
         starsView.push(
-          <div key={i} style={this.style.item} onClick={this.onClick.bind(this, i)}>{STAR.T}</div>
+          <div key={i} style={this.props.disable ? this.style.itemDisabled : this.style.item} onClick={this.onClick.bind(this, i)}>{STAR.T}</div>
         );
       }else {
         starsView.push(
-          <div key={i} style={this.style.item} onClick={this.onClick.bind(this, i)}>{STAR.F}</div>
+          <div key={i} style={this.props.disable ? this.style.itemDisabled : this.style.item} onClick={this.onClick.bind(this, i)}>{STAR.F}</div>
         );
       }
     }

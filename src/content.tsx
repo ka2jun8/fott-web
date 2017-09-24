@@ -2,7 +2,7 @@ import * as ReactDOM from "react-dom";
 import * as React from "react";
 import { Tabs, Tab, Button } from "react-bootstrap";
 import {EventEmitter} from "eventemitter3";
-import { FirebaseWrapper, AllTextMap, ListInfo, TextInfo } from "./firebase";
+import { FirebaseWrapper, AllTextMap, ListInfo, TextInfo, EditTextInfo } from "./firebase";
 import {TabContent} from "./main";
 import {Add} from "./add";
 import {AddList} from "./add-list";
@@ -16,6 +16,7 @@ export interface ContentProps {
   textList: AllTextMap,
   selectedListId: string,
   selectedTextList: TextInfo[],
+  editItem: EditTextInfo,
   onLogout: () => void,
 }
 
@@ -52,7 +53,7 @@ export class Content extends React.Component<ContentProps, any> {
     );
 
     const addView = (
-      <div style={this.style.view}><Add emitter={this.props.emitter} lists={this.props.lists}/></div>
+      <div style={this.style.view}><Add emitter={this.props.emitter} lists={this.props.lists} existItem={this.props.editItem}/></div>
     );
 
     const addListView = (

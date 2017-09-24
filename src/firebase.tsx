@@ -38,6 +38,10 @@ export interface TextInfo {
   createDate?: number,
 }
 
+export interface EditTextInfo extends TextInfo {
+  listId: string,
+}
+
 export interface ResultAllTextMap {
   [listId: string]: ResultTextInfoMap,
 }
@@ -161,6 +165,20 @@ export class FirebaseWrapper {
           return _.assign({}, values[id], {__id: id});
         }) : [];
         resolve(lists);
+      });
+    });
+  }
+
+  getTextWithId(profile: UserProfile, listId: string, id: string) : Promise<TextInfo> {
+    return new Promise((resolve, reject) => {
+      if(!listId) {
+        listId = __DefaultList;
+      }
+      const userref: firebase.database.Reference = this.fb.database().ref("users/" + profile.id + "/" + PathMap.Text + "/" + listId + "/" + id);
+      userref.once("value", (snapshot) => { //TODO .onにしてsubscribeする？
+        const value: ResultTextInfoMap = snapshot.val();
+        const v: TextInfo = _.assign({}, value, {__id: id})
+        resolve(v);
       });
     });
   }

@@ -2,26 +2,24 @@ import * as ReactDOM from "react-dom";
 import * as React from "react";
 import { Tabs, Tab, FormGroup, ControlLabel, FormControl, HelpBlock, Button, Radio } from "react-bootstrap";
 import {EventEmitter} from "eventemitter3";
-import {ListInfo, TextInfo, __DefaultList} from "./firebase";
+import {ListInfo, EditTextInfo, TextInfo, __DefaultList} from "./firebase";
 import {Star} from "./star";
 import {SelectList} from "./select-list";
 
 export interface AddProps {
+  existItem: EditTextInfo,
   lists: ListInfo[],
   emitter: EventEmitter,
 }
 
-export interface AddState extends TextInfo {
-  listId: string,
-}
-
-export class Add extends React.Component<AddProps, AddState> {
+export class Add extends React.Component<AddProps, EditTextInfo> {
   constructor() {
     super();
   }
 
-  state: AddState = {
+  state: EditTextInfo = {
     listId: __DefaultList,
+    __id: "",
     title: "",
     image: "",
     text: "",
@@ -33,6 +31,13 @@ export class Add extends React.Component<AddProps, AddState> {
   style: any = {
     view: {
       margin: 5,
+    }
+  }
+
+  componentDidUpdate() {
+    const item = this.props.existItem;
+    if(item && item.__id !== this.state.__id) {
+      this.setState(item);
     }
   }
 

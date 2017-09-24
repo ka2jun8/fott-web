@@ -3,10 +3,9 @@ import * as React from "react";
 import {Button} from "react-bootstrap";
 import {EventEmitter} from "eventemitter3";
 import * as _ from "underscore";
-import { FirebaseWrapper, UserProfile, ListInfo, AllTextMap, TextInfo, PathMap, __DefaultList } from "./firebase";
+import { FirebaseWrapper, UserProfile, ListInfo, AllTextMap, TextInfo, PathMap, __DefaultList, EditTextInfo } from "./firebase";
 import {Login} from "./login";
 import {Content} from "./content";
-import {AddState} from "./add";
 import {AddListState} from "./add-list";
 const Config = require("../setting.json");
 
@@ -19,6 +18,7 @@ export interface MainState {
   textList: AllTextMap,
   selectedListId: string,
   selectedTextList: TextInfo[],
+  editItem: EditTextInfo,
   logined: boolean,
 }
 
@@ -43,6 +43,7 @@ export class Main extends React.Component<any, MainState> {
     textList: {},
     selectedListId: __DefaultList,
     selectedTextList: [],
+    editItem: null,
     logined: false,
   }
 
@@ -68,14 +69,16 @@ export class Main extends React.Component<any, MainState> {
       }, 0);
     }
 
-    this.state.emitter.on("add", (state: AddState)=>{
-      const _id = this.state.fb.generateId(this.state.userProfile, PathMap.Text+"/"+state.listId);
+    this.state.emitter.on("add", (state: EditTextInfo)=>{
+      const _id = state.__id || this.state.fb.generateId(this.state.userProfile, PathMap.Text+"/"+state.listId);
       this.state.fb.pushText(this.state.userProfile, state.listId, _id, state).then(()=>{
         setTimeout(this.updateTextList.bind(this), 0);
         this.setState({tabContent: TabContent.TEXTS});
       }).catch((error)=>{
         console.error(error);
       });
+    }).on("edit", (item: EditTextInfo)=>{
+      this.setState({editItem: item, tabContent: TabContent.ADD});
     }).on("delete", (listId: string, _id: string)=>{
       this.state.fb.deleteTextInfo(this.state.userProfile, listId, _id).then(()=>{
         setTimeout(this.updateTextList.bind(this), 0);
@@ -103,15 +106,37 @@ export class Main extends React.Component<any, MainState> {
         selectedListId: id,
         selectedTextList: this.state.textList[id] || [],
       });
+    }).on("change-list", (itemId: string, oldListId: string, newListId: string)=>{
+      this.state.fb.getTextWithId(this.state.userProfile, oldListId, itemId).then((item)=>{
+        return this.state.fb.pushText(this.state.userProfile, newListId, itemId, item);
+      }).then(()=>{
+        return this.state.fb.deleteTextInfo(this.state.userProfile, oldListId, itemId);
+      }).then(()=>{
+        setTimeout(this.updateTextList.bind(this), 0);
+        this.setState({tabContent: TabContent.TEXTS});
+      }).catch((error)=>{
+        //TODO roll back
+        console.error(error);
+      });
     }).on("tab", (id: number)=>{
       this.setState({tabContent: id});
     });
   }
 
+  checkExist(items: any[], id: string): boolean {
+    let result = false;
+    _.each(items, (item)=>{
+      if(item.__id === id) {
+        result = true;
+      }
+    });
+    return result;
+  }
+
   updateListInfo(): Promise<any>{
     return new Promise<any>((resolve, reject)=>{
       this.state.fb.getList(this.state.userProfile).then((result)=>{
-        if(result.length > 0) {
+        if(this.checkExist(result, __DefaultList)) {
           this.setState({lists: result});
         }else {
           this.state.fb.createList(this.state.userProfile, __DefaultList, {
