@@ -3,6 +3,7 @@ import * as React from "react";
 import { Media, Button, Image, FormGroup, ControlLabel, FormControl } from "react-bootstrap";
 import {EventEmitter} from "eventemitter3";
 import {ListInfo, AllTextMap, TextInfo} from "./firebase";
+import {SelectList} from "./select-list";
 
 export interface TextsProps {
   emitter: EventEmitter,
@@ -24,8 +25,8 @@ export class Texts extends React.Component<TextsProps, any> {
     this.props.emitter.emit("delete", this.props.selectedListId, _id);
   }
 
-  onChangeList(e) {
-    this.props.emitter.emit("select-list", e.target.value);
+  onChangeList(listId) {
+    this.props.emitter.emit("select-list", listId);
   }
 
   render() {
@@ -41,6 +42,7 @@ export class Texts extends React.Component<TextsProps, any> {
             <Media.Heading>{item.title}</Media.Heading>
             <div style={{margin: 5}}>
               <p>{item.text}</p>
+
               <Button onClick={this.onDelete.bind(this, item.__id)}>削除</Button>
             </div>
           </Media.Body>
@@ -56,22 +58,10 @@ export class Texts extends React.Component<TextsProps, any> {
       <div>何も表示するものがないよん</div>
     );
 
-    const lists = this.props.lists.map((list, i)=>{
-      return <option key={i} value={list.__id}>{list.title}</option>;
-    });
-    const selectListView = (
-      <FormGroup controlId="formControlsSelect2">
-        <ControlLabel>List Select</ControlLabel>
-        <FormControl value={this.props.selectedListId} onChange={this.onChangeList.bind(this)} componentClass="select">
-          {lists}
-        </FormControl>
-      </FormGroup>
-    );
-
     return (
       <div>
         <div>
-          {selectListView}
+          <SelectList lists={this.props.lists} selectedId={this.props.selectedListId} onSelect={this.onChangeList.bind(this)}/>
         </div>
         <div>
           {textView}

@@ -3,6 +3,8 @@ import * as React from "react";
 import { Tabs, Tab, FormGroup, ControlLabel, FormControl, HelpBlock, Button, Radio } from "react-bootstrap";
 import {EventEmitter} from "eventemitter3";
 import {ListInfo, TextInfo, __DefaultList} from "./firebase";
+import {Star} from "./star";
+import {SelectList} from "./select-list";
 
 export interface AddProps {
   lists: ListInfo[],
@@ -34,8 +36,8 @@ export class Add extends React.Component<AddProps, AddState> {
     }
   }
 
-  onChangeList(e) {
-    this.setState({listId: e.target.value});
+  onChangeList(listId) {
+    this.setState({listId});
   }
 
   onChangeTitle(e) {
@@ -54,6 +56,10 @@ export class Add extends React.Component<AddProps, AddState> {
     this.setState({ text: e.target.value });
   }
 
+  onChangeStar(star) {
+    this.setState({star});
+  }
+
   onAdd() {
     this.props.emitter.emit("add", this.state);
     this.setState({
@@ -67,46 +73,19 @@ export class Add extends React.Component<AddProps, AddState> {
   }
 
   render() {
-    const lists = this.props.lists.map((list, i)=>{
-      return <option key={i} value={list.__id}>{list.title}</option>;
-    });
-    const selectListView = (
-      <FormGroup controlId="formControlsSelect1">
-        <ControlLabel>List Select</ControlLabel>
-        <FormControl onChange={this.onChangeList.bind(this)} componentClass="select">
-          {lists}
-        </FormControl>
-      </FormGroup>
-    );
-
-    //TODO 星型に変える
     const selectStarView = (
       <FormGroup>
-        <Radio name="radioGroup" inline>
-          1
-        </Radio>
-        <Radio name="radioGroup" inline>
-          2
-        </Radio>
-        <Radio name="radioGroup" inline>
-          3
-        </Radio>
-        <Radio name="radioGroup" inline>
-          4
-        </Radio>
-        <Radio name="radioGroup" inline>
-          5
-        </Radio>
+        <Star star={this.state.star} onClick={this.onChangeStar.bind(this)}/>
       </FormGroup>
     );
 
     const formView = (
       <div style={this.style.view}>
-        {selectListView}
+        <SelectList lists={this.props.lists} selectedId={this.state.listId} onSelect={this.onChangeList.bind(this)} />
         <FieldGroup
           id="formControlsText"
           type="text"
-          label="title"
+          label="Title"
           placeholder="Enter Title"
           value={this.state.title}
           onChange={this.onChangeTitle.bind(this)}
@@ -114,7 +93,7 @@ export class Add extends React.Component<AddProps, AddState> {
         <FieldGroup
           id="formControlsText"
           type="text"
-          label="image url"
+          label="Image url"
           placeholder="Enter Image URL"
           value={this.state.image}
           onChange={this.onChangeImage.bind(this)}
@@ -122,7 +101,7 @@ export class Add extends React.Component<AddProps, AddState> {
         <FieldGroup
           id="formControlsText"
           type="text"
-          label="reference url"
+          label="Reference url"
           placeholder="Enter URL"
           value={this.state.url}
           onChange={this.onChangeUrl.bind(this)}
@@ -130,12 +109,15 @@ export class Add extends React.Component<AddProps, AddState> {
         <FieldGroup
           id="formControlsText"
           type="text"
-          label="your text"
+          label="Text"
           placeholder="Enter Text"
           value={this.state.text}
           onChange={this.onChangeText.bind(this)}
         />
-        {selectStarView}
+        <FormGroup controlId={"SelectStar"}>
+          <ControlLabel>{"Star"}</ControlLabel>
+          {selectStarView}
+        </FormGroup>
         <Button onClick={this.onAdd.bind(this)}>Add</Button>
       </div>
     );
